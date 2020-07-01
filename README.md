@@ -14,15 +14,16 @@ npm i
 Rename the `config.example.json` file to `config.json` and add in the required information.
 
 `git clone` the repo and start the project with the following commands.
-```bash
-Start with NPM: npm start
-Start with PM2: pm2 start pm2-start.json
-```
+**Run the Bot**
+
+Start with NPM: `npm start`
+
+Start with PM2: `pm2 start pm2-start.json`
 
 ## Contributing
 Pull requests are welcome. Please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 
-## License
+## License Info
 [MIT](https://choosealicense.com/licenses/mit/)
