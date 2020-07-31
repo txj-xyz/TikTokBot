@@ -2,14 +2,15 @@
   "name": "tiktokbot",
   "version": "0.1.2",
   "description": "Posts the TikTok videos in an attachment",
-  "main": "bot.js",
+  "main": "tiktokbot.js",
   "scripts": {
-    "start": "node ./src/bot.js"
+    "start": "node ./src/tiktokbot.js"
   },
   "author": "TXJ69",
   "license": "MIT",
   "dependencies": {
     "discord.js": "^12.2.0",
+    "dotenv": "^8.2.0",
     "tiktok-scraper": "^1.1.11"
   }
 }
