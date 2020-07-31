@@ -1,6 +1,6 @@
 {
     "apps": [{
-      "name": "TikTokBot",
+      "name": "TikTok-Bot",
       "script": "npm",
       "cwd": ".",
       "args": "start",
