@@ -13,6 +13,10 @@ client.on('ready', () => {
 
 client.on('message', async msg => {
   switch(msg.content) {
+    case `${process.env.PREFIX}status` : 
+      if(msg.author.id !== `189238841054461952`) return;
+      client.user.setPresence({ activity: { type: 'LISTENING', name: `your TikToks! | ${process.env.PREFIX}invite` } })
+      break;
     case `${process.env.PREFIX}invite` :
       console.log(`[INFO] Invite Command used. [${msg.author.tag}]`)
       msg.reply(`Invite me here with this link.\n ${process.env.INVITE_URL}`)
