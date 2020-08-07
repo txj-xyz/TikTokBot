@@ -23,26 +23,22 @@ client.on('message', async msg => {
       break;
   }
   if (msg.content.includes('https://vm.tiktok.com') || msg.content.includes('tiktok.com/@')) {
-    let loading = await msg.channel.send(`Loading TikTok`);
+    //let loading = await msg.channel.send(`Loading TikTok...`);
     console.log(`Message contains a TikTok link!`);
 
     let urlRegex = /(https?:\/\/[^ ]*)/;
     let url = msg.content.match(urlRegex)[1];
     url = url.split(`?`)[0];
-    try {
-      getVideoMeta(url, client.util.options).then(data => {
-        console.log(data)
-        client.util.checkManagePermissions(msg, client);
-        loading.delete();
-        msg.channel.send(new Discord.MessageAttachment(data.videoUrl, `tiktok.mp4`))
-      }).catch(() => {
-        client.util.checkManagePermissions(msg, client);
-        loading.edit(`[ERROR] This video is either Private or has been removed`);
-      })
-    } catch (error) {
-      console.log(error);
-      loading.edit(`[ERROR] I'm sorry about that, there was an error trying to reach TikToks API, please try again in a few mintues.`);
-    }
+    getVideoMeta(url, client.util.options).then(data => {
+      const videoAttach = new Discord.MessageAttachment(data.videoUrl, `tiktok.mp4`);
+      console.log(data)
+      client.util.checkManagePermissions(msg, client);
+      //loading.delete();
+      msg.channel.send(data.videoUrl)
+    }).catch(() => {
+      client.util.checkManagePermissions(msg, client);
+      msg.channel.send(`[ERROR] This video is either Private or has been removed`);
+    })
   }
 });
 
