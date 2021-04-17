@@ -1,3 +1,9 @@
+THIS IS NOW DEAD DUE TO API CHANGES
+
+
+
+
+
 # TikTok Bot
 
 TikTok Bot is a bot created to post the videos of tiktoks without user input, this means that people can pos any type of TikTok link and the bot will pull the video and respond to the user.
