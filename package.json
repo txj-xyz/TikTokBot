@@ -9,8 +9,8 @@
   "author": "TXJ69",
   "license": "MIT",
   "dependencies": {
-    "discord.js": "^12.2.0",
-    "dotenv": "^8.2.0",
-    "tiktok-scraper": "^1.1.11"
+    "discord.js": "^13.4.0",
+    "dotenv": "^10.0.0",
+    "tiktok-scraper": "^1.4.36"
   }
 }

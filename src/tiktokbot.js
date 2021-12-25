@@ -1,45 +1,63 @@
 require('dotenv').config();
 const { getVideoMeta } = require(`tiktok-scraper`);
-const Discord = require(`discord.js`);
-const client = new Discord.Client();
-client.util = require(`./util/helpers.js`);
-
-
-
-client.on('ready', () => {
-  client.user.setPresence({ activity: { type: 'LISTENING', name: `your TikToks! | ${process.env.PREFIX}invite` } })
-  console.log(`Logged in as ${client.user.tag}!`);
+const { MessageAttachment, MessageEmbed, Client, Intents } = require(`discord.js`);
+const client = new Client({
+    intents: ['GUILDS', 'GUILD_MESSAGES'].map((i) => Intents.FLAGS[i]),
 });
 
-client.on('message', async msg => {
-  switch(msg.content) {
-    case `${process.env.PREFIX}status` : 
-      if(msg.author.id !== `189238841054461952`) return;
-      client.user.setPresence({ activity: { type: 'LISTENING', name: `your TikToks! | ${process.env.PREFIX}invite` } })
-      break;
-    case `${process.env.PREFIX}invite` :
-      console.log(`[INFO] Invite Command used. [${msg.author.tag}]`)
-      msg.reply(`Invite me here with this link.\n ${process.env.INVITE_URL}`)
-      break;
-  }
-  if (msg.content.includes('https://vm.tiktok.com') || msg.content.includes('tiktok.com/@')) {
-    //let loading = await msg.channel.send(`Loading TikTok...`);
-    console.log(`Message contains a TikTok link!`);
+const convertNumToInternational = function (number) {
+    return Math.abs(Number(number)) >= 1.0e9
+        ? (Math.abs(Number(number)) / 1.0e9).toFixed(1) + 'B'
+        : Math.abs(Number(number)) >= 1.0e6
+        ? (Math.abs(Number(number)) / 1.0e6).toFixed(1) + 'M'
+        : Math.abs(Number(number)) >= 1.0e3
+        ? (Math.abs(Number(number)) / 1.0e3).toFixed(1) + 'K'
+        : Math.abs(Number(number));
+};
 
-    let urlRegex = /(https?:\/\/[^ ]*)/;
-    let url = msg.content.match(urlRegex)[1];
-    url = url.split(`?`)[0];
-    getVideoMeta(url, client.util.options).then(data => {
-      const videoAttach = new Discord.MessageAttachment(data.videoUrl, `tiktok.mp4`);
-      console.log(data)
-      client.util.checkManagePermissions(msg, client);
-      //loading.delete();
-      msg.channel.send(data.videoUrl)
-    }).catch(() => {
-      client.util.checkManagePermissions(msg, client);
-      msg.channel.send(`[ERROR] This video is either Private or has been removed`);
-    })
-  }
+client.on('ready', () => {
+    client.user.setPresence({ activity: { type: 'LISTENING', name: `your TikToks! | ${process.env.PREFIX}invite` } });
+    console.log(`Logged in as ${client.user.tag}!`);
+});
+
+client.on('messageCreate', async (message) => {
+    if (
+        message.content.includes('https://') &&
+        (message.content.includes('tiktok.com/') || message.content.includes('vm.tiktok.com/'))
+    ) {
+        const tiktokLink = message.content.match(/(https?:\/\/[^ ]*)/)[1].split(`?`)[0];
+        try {
+            getVideoMeta(tiktokLink, {})
+                .then(async (videoMeta) => {
+                    const videoMetaEmbed = new MessageEmbed()
+                        .setURL(tiktokLink)
+                        .setTitle(`"${videoMeta.collector[0]?.text}"`, null, tiktokLink)
+                        .addField(
+                            '**Likes**',
+                            String(convertNumToInternational(videoMeta.collector[0]?.diggCount)),
+                            true
+                        )
+                        .addField(
+                            '**Views**',
+                            String(convertNumToInternational(videoMeta.collector[0]?.playCount)),
+                            true
+                        )
+                        .addField(
+                            '**Comments**',
+                            String(convertNumToInternational(videoMeta.collector[0]?.commentCount)),
+                            true
+                        )
+                        .setFooter(`Uploaded: ${new Date(videoMeta.collector[0]?.createTime * 1000).toLocaleString()}`);
+                    await message.channel.send({
+                        embeds: [videoMetaEmbed],
+                        files: [new MessageAttachment(videoMeta.collector[0]?.videoUrl, `tiktok.mp4`)],
+                    });
+                })
+                .catch(() => {
+                    message.channel.send(`[ERROR] This video is either Private or has been removed`);
+                });
+        } catch (error) {}
+    }
 });
 
 client.login(process.env.TOKEN);
