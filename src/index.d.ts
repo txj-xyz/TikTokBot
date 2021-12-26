@@ -1,4 +1,4 @@
-import { Client } from 'discord.js'
+import { Client, Message } from 'discord.js'
 
 declare class TikTok extends Client {
     public constructor();
@@ -9,7 +9,7 @@ declare class TikTok extends Client {
 
     private timeify(ms: number): string;
 
-    private ready(): null;
+    private ready(): void;
 
-    private message(message: any): null;
+    private message(message: Message): void;
 }
