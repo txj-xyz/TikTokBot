@@ -1,5 +1,6 @@
 {
-    "apps": [{
+  "apps": [
+    {
       "name": "TikTok-Bot",
       "script": "npm",
       "cwd": ".",
@@ -7,5 +8,6 @@
       "log_date_format": "YYYY-MM-DD HH:mm Z",
       "exec_interpreter": "none",
       "exec_mode": "fork"
-    }]
-  }
+    }
+  ]
+}
