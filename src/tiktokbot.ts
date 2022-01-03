@@ -6,6 +6,9 @@ import { getVideoMeta as fetch } from 'tiktok-scraper'
 // Log <ENV> errors.
 if (config()?.error) throw new Error('Failed to load .env file')
 
+// Default embed color.
+const color: number | string = 0xE18499
+
 // Define global interfaces.
 declare global {
     var Client: object
@@ -24,6 +27,11 @@ declare global {
          */
 
         is(query: string): boolean
+    }
+
+    interface MessageExtender extends Message {
+        args: string[]
+        command: string
     }
 }
 
@@ -62,6 +70,19 @@ export default class TikTok extends Client {
      */
     private get reply() {
         return { content: null, embeds: [], files: [], components: [], allowedMentions: { repliedUser: false } }
+    }
+
+    /**
+     * Default error catching action.
+     * 
+     * @param [] None required.
+     * @return Function
+     * 
+     * @example 
+     * <TikTok>.default: () => null (Function)
+     */
+    private get default() {
+        return () => null
     }
 
     /**
@@ -127,6 +148,62 @@ export default class TikTok extends Client {
         // Check for bot message or DM message.
         if (message.author?.bot || message.channel?.type?.is('DM')) return
 
+        // Check for commands.
+        if (message.content.match(new RegExp(`^(<@!?${this.user?.id}>.*)`, 'gm'))?.some((e: string) => e)) {
+
+            // Set custom message properties.
+            { (message as MessageExtender).args = message.content.split(' ').slice(1) }
+            { (message as MessageExtender).command = (message as MessageExtender).args.shift() ?? '' }
+
+            if ((message as MessageExtender).command.is('invite')) {
+
+                // Invite command.
+                const url: string = `https://discord.com/api/oauth2/authorize?client_id=${this.user?.id}&permissions=274878032960&scope=bot`
+                const embeds: object[] = [{
+                    color,
+                    author: {
+                        name: this.user?.tag,
+                        iconURL: this.user?.avatarURL({ format: 'png', dynamic: true, size: 128 })
+                    },
+                    title: 'Click me!',
+                    url,
+                    description: `Raw URL: [${url}](${url})`
+
+                }]
+
+                // Reply to author.
+                message.reply(this.mergify(this.reply, { embeds }))
+            } else {
+
+                // If bot is mentioned but no command is specified.
+                const embeds: object[] = [{
+                    color,
+                    author: {
+                        name: this.user?.tag,
+                        iconURL: this.user?.avatarURL({ format: 'png', dynamic: true, size: 128 })
+                    },
+                    title: 'Hello There! \uD83D\uDC4B',
+                    description: 'This bot will read your messages and look for TikTok links. It will then post the video and it\'s information!',
+                    fields: [
+                        {
+                            name: 'Uptime',
+                            value: this.timeify(this.uptime ?? 0),
+                            inline: false
+                        },
+                        {
+                            name: 'Commands',
+                            value: `> ${this.user?.toString()} invite`,
+                            inline: false
+                        }
+                    ]
+
+                }]
+
+                // Reply to author.
+                message.reply(this.mergify(this.reply, { embeds }))
+            }
+        }
+
         // Match all TikTok links.
         let urls: RegExpMatchArray | null = message.content?.match(/http(s?):\/\/(vm|www)\.tiktok\.com\/.*?\/(video\/\d*)?/g)
 
@@ -134,17 +211,22 @@ export default class TikTok extends Client {
         if (!urls?.some((e: string) => e)) return
         else urls = [...new Set(urls)]
 
+        // Notify user for searching.
+        message.react('\uD83D\uDD0D') // Magnifying glass emoji.
+
         // Loop though URLs.
         for await (const url of urls) {
 
             // Try to fetch video.
-            let video = await fetch(url).catch(null)
+            let video = await fetch(url).catch(this.default)
             if (!video) message.reply(this.mergify(this.reply, { content: `Unable to find data for <${url}>` }))
+                .then(_ => message.reactions.removeAll().catch(this.default))
+                .catch(this.default)
             else {
 
                 // Create <discord.js> MessageEmbed.
                 const embed: MessageEmbed | object = {
-                    color: 0xE18499,
+                    color,
                     author: {
                         name: video.collector[0].authorMeta.nickName,
                         iconURL: video.collector[0].authorMeta.avatar,
@@ -152,7 +234,7 @@ export default class TikTok extends Client {
                     },
                     description: `**[${video.collector[0].text}](${url})**`,
                     thumbnail: {
-                        url: video.collector[0].musicMeta?.coverMedium ?? ''
+                        url: video.collector[0].musicMeta?.coverMedium
                     },
                     fields: [
                         {
@@ -178,19 +260,21 @@ export default class TikTok extends Client {
                         },
                         {
                             name: '\u200B',
-                            value: `This information was provided by \`${this.user?.tag}\`, if you would like this bot on your own server contact [Kurasad#2521](https://discord.com/users/476812566530883604).`,
+                            value: `This information was provided by \`${this.user?.tag}\`.\nRun \"${this.user?.toString()} invite\" to get an invite link!`,
                             inline: false
                         }
                     ],
                     timestamp: new Date(video.collector[0].createTime * 1000).getTime(),
                     footer: {
                         text: `Provided by ${this.user?.tag} | Video Uploaded`,
-                        iconURL: this.user?.avatarURL({ format: 'png', dynamic: true, size: 128 }) ?? ''
+                        iconURL: this.user?.avatarURL({ format: 'png', dynamic: true, size: 128 })
                     }
                 }
 
                 // Reply with video info.
                 message.reply(this.mergify(this.reply, { embeds: [embed], files: [new MessageAttachment(video.collector[0]?.videoUrl, 'upload.mp4')] }))
+                    .then(_ => message.reactions.removeAll().catch(this.default))
+                    .catch(this.default)
             }
         }
     }
