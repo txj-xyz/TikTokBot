@@ -1,15 +1,14 @@
 {
-  "name": "tiktok",
-  "version": "1.0.0",
+  "name": "tiktokbot",
+  "version": "1.0.1",
   "description": "Posts the TikTok videos in an attachment",
-  "main": "./lib/index.js",
+  "main": "./lib/tiktokbot.js",
   "scripts": {
-    "build": "npx tsc",
-    "start": "npm run build && node ."
+    "prestart": "npx tsc",
+    "start": "node ."
   },
-  "keywords": [],
-  "author": "Dhanush Pulavarthy",
-  "license": "GNU",
+  "author": "TXJ69",
+  "license": "MIT",
   "dependencies": {
     "discord.js": "^13.4.0",
     "dotenv": "^10.0.0",

@@ -1,5 +1,5 @@
 # TikTok Bot
-This bot is a fork of [txj-xyz/TikTokBot](https://github.com/txj-xyz/TikTokBot). The code has been remade in Typescript and functions the same as the original bot. Links posted in Discord messages are automatically parsed and the video data is fetched directly from TikTok. You do not need to worry about keeping the TikTok link a specific format since the parser logic will take care of that for you.
+Links posted in Discord messages are automatically parsed and the video data is fetched directly from TikTok. You do not need to worry about keeping the TikTok link a specific format since the parser logic will take care of that for you.
 
 ### Requirements
 ```
@@ -21,7 +21,7 @@ npm i discord.js dotenv tiktok-scraper typescript
 
 ### Usage / Running the bot
 
-**1.)** Run `git clone https://github.com/DPulavarthy/TikTokBot` to clone to repo to your local system.
+**1.)** Run `git clone https://github.com/txj-xyz/TikTokBot` to clone to repo to your local system.
 
 **2.)** Open the folder (or `cd` into the directory) and rename the `.env_example` file to `.env` (Make sure to fill out the required information in this file).
 
