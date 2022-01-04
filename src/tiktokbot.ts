@@ -46,7 +46,7 @@ export default class TikTok extends Client {
         super({
             intents: ['GUILDS', 'GUILD_MESSAGES'],
             makeCache: Options.cacheWithLimits({ MessageManager: { maxSize: 200, sweepInterval: 5 * 60000 } }),
-            presence: { status: 'dnd', activities: [{ name: 'Just Started Up. What Did I Miss? | /help', type: 'LISTENING' }] }
+            presence: { status: 'dnd', activities: [{ name: 'your TikTok links.', type: 'LISTENING' }] }
         })
 
         // Compare two strings case insensitive.
