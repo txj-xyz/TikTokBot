@@ -159,7 +159,7 @@ export default class TikTok extends Client {
 
                 // Invite command.
                 const url: string = `https://discord.com/api/oauth2/authorize?client_id=${this.user?.id}&permissions=274878032960&scope=bot`
-                const embeds: object[] = [{
+                const embeds: MessageEmbed[] | object[] = [{
                     color,
                     author: {
                         name: this.user?.tag,
@@ -176,7 +176,7 @@ export default class TikTok extends Client {
             } else {
 
                 // If bot is mentioned but no command is specified.
-                const embeds: object[] = [{
+                const embeds: MessageEmbed[] | object[] = [{
                     color,
                     author: {
                         name: this.user?.tag,
