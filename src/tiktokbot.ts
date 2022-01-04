@@ -22,8 +22,8 @@ declare global {
          * @return boolean
          * 
          * @example
-         * "a".compare("b"): false (boolean)
-         * "a".compare("A"): true (boolean)
+         * "a".is("b"): false (boolean)
+         * "a".is("A"): true (boolean)
          */
 
         is(query: string): boolean
