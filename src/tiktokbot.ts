@@ -1,6 +1,6 @@
 // Import modules.
 import { config } from 'dotenv'
-import { Client, Message, Intents, Options, MessageAttachment, MessageEmbed } from 'discord.js'
+import { Client, Message, Options, MessageAttachment, MessageEmbed } from 'discord.js'
 import { getVideoMeta as fetch } from 'tiktok-scraper'
 
 // Log <ENV> errors.
@@ -44,7 +44,7 @@ declare global {
 export default class TikTok extends Client {
     public constructor() {
         super({
-            intents: ['GUILDS', 'GUILD_MESSAGES'].map((i: string) => (Intents as any).FLAGS[i]),
+            intents: ['GUILDS', 'GUILD_MESSAGES'],
             makeCache: Options.cacheWithLimits({ MessageManager: { maxSize: 200, sweepInterval: 5 * 60000 } }),
             presence: { status: 'dnd', activities: [{ name: 'Just Started Up. What Did I Miss? | /help', type: 'LISTENING' }] }
         })
